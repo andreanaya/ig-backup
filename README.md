@@ -1,10 +1,25 @@
 # ig-comment-backup
 Backup of instagram comments
 
+## Add node modules
+```
+yarn install
+```
+
 ## Project setup
 This script will create *mongod.conf* file and all *mongo* folders where the DB will be saved
 ```
-./setup_mongo.sh
+yarn setup
+```
+
+## Start mongo
+```
+yarn mongo:start
+```
+
+Additionally it is possible to stop mongo with yarn.
+```
+yarn mongo:stop
 ```
 
 ## Cron script
@@ -25,10 +40,6 @@ env EDITOR=nano crontab -e
 
 ### Create cron job
 This scrip will execute at minute 0 every two hours.
-
-**PATH_TO_FOLDER** is the script location.
-
-**CRON_SCRIPT** is the script file itself.
 
 ```
 0 */2 * * * cd PATH_TO_FOLDER && ./CRON_SCRIPT.sh
