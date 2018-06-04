@@ -13,7 +13,7 @@ You need to create a script to be executed by the cron task. This script will de
 #!/bin/sh
 CRON=true MONGODB_URI=mongodb://localhost/ig-comments CODE=PHOTO_SHORTCODE /usr/local/bin/node index
 ```
-*the node path should be absolute and point to the node bin file in the file system*
+*__NOTE__: node path should be absolute and point to the node bin file in the file system*
 
 ## Cron setup
 This is how to setup a cron job to execute the script
@@ -25,8 +25,11 @@ env EDITOR=nano crontab -e
 
 ### Create cron job
 This scrip will execute at minute 0 every two hours.
+
 **PATH_TO_FOLDER** is the script location.
+
 **CRON_SCRIPT** is the script file itself.
+
 ```
 0 */2 * * * cd PATH_TO_FOLDER && ./CRON_SCRIPT.sh
 ```
