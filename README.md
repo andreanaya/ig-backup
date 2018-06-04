@@ -5,7 +5,7 @@ Backup of instagram comments
 
 ### CRON JOB
 ```
-55 */2 * * * cd PATH_TO_FOLDER && ./CRON_SCRIPT.sh
+0 */2 * * * cd PATH_TO_FOLDER && ./CRON_SCRIPT.sh
 ```
 
 ### ADD/EDIT CRON JOB
