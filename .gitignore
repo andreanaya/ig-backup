@@ -1,0 +1,8 @@
+.DS_Store
+mongo
+mongod.conf
+node_modules
+yarn.lock
+*.log
+*.sh
+!backup.sh
