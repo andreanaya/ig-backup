@@ -192,7 +192,11 @@ async function getComments(after) {
 }
 
 async function init() {
-	await mongoose.connect(process.env.MONGODB_URI+'/'+SHORT_CODE);
+	try {
+		await mongoose.connect(process.env.MONGODB_URI+'/'+SHORT_CODE);
+	} catch(error) {
+		fs.writeFileSync(logFile, '['+getTimestamp()+'] '+error+'.\n', { encoding: 'utf8', flag: 'a' });
+	}
 
 	fs.writeFileSync(logFile, '['+getTimestamp()+'] Mongoose connected to '+process.env.MONGODB_URI+'/'+SHORT_CODE+'.\n', { encoding: 'utf8', flag: 'a' });
 	
@@ -209,19 +213,24 @@ async function init() {
 	fs.writeFileSync(logFile, '['+getTimestamp()+'] Current timestamp '+current+'\n', { encoding: 'utf8', flag: 'a' });
 
 	let userAgent = USER_AGENT+' '+Date.now();
-	let sig = await getSig(userAgent);
 
-	let context = {sig:sig, userAgent:userAgent, current: current}
+	try {
+		let sig = await getSig(userAgent);
 
-	if(process.env.AFTER === undefined) {
-		let res = await request.get('http://instagram.com/p/'+SHORT_CODE+'/')
-			.query({'__a': 1})
-			.set('User-Agent', userAgent);
+		let context = {sig:sig, userAgent:userAgent, current: current}
 
-		let comments = res.body.graphql.shortcode_media.edge_media_to_comment;
-		processComments.call(context, comments);
-	} else {
-		getComments.call(context, process.env.AFTER);
+		if(process.env.AFTER === undefined) {
+			let res = await request.get('http://instagram.com/p/'+SHORT_CODE+'/')
+				.query({'__a': 1})
+				.set('User-Agent', userAgent);
+
+			let comments = res.body.graphql.shortcode_media.edge_media_to_comment;
+			processComments.call(context, comments);
+		} else {
+			getComments.call(context, process.env.AFTER);
+		}
+	} catch(error) {
+		fs.writeFileSync(logFile, '['+getTimestamp()+'] '+error+'.\n', { encoding: 'utf8', flag: 'a' });
 	}
 }
 
