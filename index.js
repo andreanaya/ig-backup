@@ -117,7 +117,7 @@ async function processComments(comments) {
 		fs.writeFileSync(logFile, '['+getTimestamp()+'] Complete.\n', { encoding: 'utf8', flag: 'a' });
 
 		try {
-			let last = await Comment.findOne({}, {epoch: 1}, {sort:{ date: -1 }});
+			let last = await Comment.findOne({}, {epoch: 1}, {sort:{ epoch: -1 }});
 			let timestamp = new Timestamp({epoch: last.epoch});
 			await timestamp.save();
 		} catch(error) {
@@ -195,7 +195,7 @@ async function init() {
 
 		fs.writeFileSync(logFile, '['+getTimestamp()+'] Mongoose connected to '+process.env.MONGODB_URI+'/'+SHORT_CODE+'.\n', { encoding: 'utf8', flag: 'a' });
 		
-		let latest = await Timestamp.findOne({}, {epoch: 1}, {sort:{ date: -1 }});
+		let latest = await Timestamp.findOne({}, {epoch: 1}, {sort:{ epoch: -1 }});
 
 		let current = latest?latest.epoch:0;
 
