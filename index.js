@@ -194,27 +194,16 @@ async function getComments(after) {
 async function init() {
 	try {
 		await mongoose.connect(process.env.MONGODB_URI+'/'+SHORT_CODE);
-	} catch(error) {
-		fs.writeFileSync(logFile, '['+getTimestamp()+'] Mongo connection '+error+'.\n', { encoding: 'utf8', flag: 'a' });
-	}
 
-	fs.writeFileSync(logFile, '['+getTimestamp()+'] Mongoose connected to '+process.env.MONGODB_URI+'/'+SHORT_CODE+'.\n', { encoding: 'utf8', flag: 'a' });
-	
-	let latest;
-	
-	try {
-		latest = await Timestamp.findOne({}, {epoch: 1}, {sort:{ date: -1 }});
-	} catch(error) {
-		fs.writeFileSync(logFile, '['+getTimestamp()+'] Timestamp error '+error+'.\n', { encoding: 'utf8', flag: 'a' });
-	}
+		fs.writeFileSync(logFile, '['+getTimestamp()+'] Mongoose connected to '+process.env.MONGODB_URI+'/'+SHORT_CODE+'.\n', { encoding: 'utf8', flag: 'a' });
+		
+		let latest = await Timestamp.findOne({}, {epoch: 1}, {sort:{ date: -1 }});
 
-	let current = latest?latest.epoch:0;
+		let current = latest?latest.epoch:0;
 
-	fs.writeFileSync(logFile, '['+getTimestamp()+'] Current timestamp '+current+'\n', { encoding: 'utf8', flag: 'a' });
+		fs.writeFileSync(logFile, '['+getTimestamp()+'] Current timestamp '+current+'\n', { encoding: 'utf8', flag: 'a' });
 
-	let userAgent = USER_AGENT+' '+Date.now();
-
-	try {
+		let userAgent = USER_AGENT+' '+Date.now();
 		let sig = await getSig(userAgent);
 
 		let context = {sig:sig, userAgent:userAgent, current: current}
@@ -230,7 +219,10 @@ async function init() {
 			getComments.call(context, process.env.AFTER);
 		}
 	} catch(error) {
-		fs.writeFileSync(logFile, '['+getTimestamp()+'] Get signature error '+error+'.\n', { encoding: 'utf8', flag: 'a' });
+		fs.writeFileSync(logFile, '['+getTimestamp()+'] '+error.toString()+'.\n', { encoding: 'utf8', flag: 'a' });
+
+		await mongoose.connection.close();
+		fs.writeFileSync(logFile, '['+getTimestamp()+'] Mongo connection closed.\n', { encoding: 'utf8', flag: 'a' });
 	}
 }
 
