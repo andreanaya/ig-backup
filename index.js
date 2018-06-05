@@ -196,7 +196,13 @@ async function init() {
 
 	fs.writeFileSync(logFile, '['+getTimestamp()+'] Mongoose connected to '+process.env.MONGODB_URI+'/'+SHORT_CODE+'.\n', { encoding: 'utf8', flag: 'a' });
 	
-	let latest = await Timestamp.findOne({}, {epoch: 1}, {sort:{ date: -1 }});
+	let latest;
+	
+	try {
+		latest = await Timestamp.findOne({}, {epoch: 1}, {sort:{ date: -1 }});
+	} catch(error) {
+		fs.writeFileSync(logFile, '['+getTimestamp()+'] '+error+'.\n', { encoding: 'utf8', flag: 'a' });
+	}
 
 	let current = latest?latest.epoch:0;
 
