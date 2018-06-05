@@ -113,7 +113,7 @@ async function processComments(comments) {
 			getComments.call(this, comments.page_info.end_cursor);
 		}, 1000);
 	}
-	else if(comments.page_info.has_next_page === false && count/comments.count < 0.9) {
+	else if(count < comments.count) {
 		setTimeout(() => {
 			getComments.call(this);
 		}, 1000);
@@ -125,12 +125,12 @@ async function processComments(comments) {
 			let last = await Comment.findOne({}, {epoch: 1}, {sort:{ date: -1 }});
 			let timestamp = new Timestamp({epoch: last.epoch});
 			await timestamp.save();
-
-			await mongoose.connection.close();
-			fs.writeFileSync(logFile, '['+getTimestamp()+'] Mongo connection closed.\n', { encoding: 'utf8', flag: 'a' });
 		} catch(error) {
 			fs.writeFileSync(logFile, '['+getTimestamp()+'] '+error+'.\n', { encoding: 'utf8', flag: 'a' });
 		}
+
+		await mongoose.connection.close();
+		fs.writeFileSync(logFile, '['+getTimestamp()+'] Mongo connection closed.\n', { encoding: 'utf8', flag: 'a' });
 	}
 
 }
@@ -187,6 +187,9 @@ async function getComments(after) {
 			if(log) process.stdout.write('\n\n############\n\n');
 			if(log) process.stdout.write('\n\n############\n\n');
 			if(log) process.stdout.write(JSON.stringify(err));
+
+			await mongoose.connection.close();
+			fs.writeFileSync(logFile, '['+getTimestamp()+'] Mongo connection closed.\n', { encoding: 'utf8', flag: 'a' });
 		}
 	}
 }
