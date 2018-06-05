@@ -133,7 +133,7 @@ async function processComments(comments) {
 async function getComments(after) {
 	let json = {
 		shortcode: SHORT_CODE,
-		first: 50
+		first: 20
 	}
 
 	if(after) json.after = after;
