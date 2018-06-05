@@ -28,7 +28,7 @@ yarn mongo:stop
 You need to create a script to be executed by the cron task. This script will define environment variables of the Instagram image to backup and the DB path where the comments are saved.
 ```
 #!/bin/sh
-CRON=true MONGODB_URI=mongodb://localhost/ig-comments CODE=PHOTO_SHORTCODE /usr/local/bin/node index
+CRON=true MONGODB_URI=mongodb://localhost CODE=PHOTO_SHORTCODE /usr/local/bin/node index
 ```
 *__NOTE__: node path should be absolute and point to the node bin file in the file system*
 
