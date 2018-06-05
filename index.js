@@ -108,14 +108,9 @@ async function processComments(comments) {
 	
 	fs.writeFileSync(logFile, '['+getTimestamp()+'] Added '+(100*count/comments.count>>0)+'% of comments. '+count+'/'+comments.count+'\n', { encoding: 'utf8', flag: 'a' });
 
-	if(comments.page_info.has_next_page && count < comments.count) {
+	if(comments.page_info.has_next_page && first > this.current) {
 		setTimeout(() => {
 			getComments.call(this, comments.page_info.end_cursor);
-		}, 1000);
-	}
-	else if(!comments.page_info.has_next_page && count < comments.count) {
-		setTimeout(() => {
-			getComments.call(this);
 		}, 1000);
 	}
 	else {
